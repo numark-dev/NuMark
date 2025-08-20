@@ -1,0 +1,42 @@
+{
+  "name": "Page",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "The title of the page"
+    },
+    "slug": {
+      "type": "string",
+      "description": "The URL-friendly identifier for the page"
+    },
+    "content": {
+      "type": "string",
+      "description": "The content of the page in Markdown format"
+    },
+    "template": {
+      "type": "string",
+      "enum": [
+        "landing",
+        "post",
+        "generic"
+      ],
+      "default": "generic",
+      "description": "The template to use for rendering the page"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published"
+      ],
+      "default": "draft",
+      "description": "The publication status of the page"
+    }
+  },
+  "required": [
+    "title",
+    "slug",
+    "content"
+  ]
+}
