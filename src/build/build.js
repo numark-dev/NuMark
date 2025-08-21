@@ -5,64 +5,70 @@ import fs from "fs-extra";
 import path from "path";
 import { fileURLToPath } from "url";
 import matter from 'gray-matter';
+import { remark } from 'remark';
+import html from 'remark-html';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import SiteLayout from '../components/SiteLayout.jsx';
 
-// Importiere deine React-Templates dynamisch
 const templates = {
     'default': () => import('../templates/default.jsx'),
     'landing': () => import('../templates/landing.jsx'),
     'post': () => import('../templates/post.jsx'),
 };
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+async function processMarkdown(markdownContent) {
+    const file = await remark().use(html).process(markdownContent);
+    return String(file);
+}
+
 export async function build() {
-  console.log(chalk.blue.bold("Starting website build process..."));
+    console.log(chalk.blue.bold("Starting website build process..."));
+    const distPath = path.resolve(__dirname, '../../dist');
+    fs.emptyDirSync(distPath);
 
-  // Lösche den "dist"-Ordner, bevor wir neu kompilieren
-  const distPath = path.resolve(__dirname, '../../dist');
-  fs.emptyDirSync(distPath);
+    const markdownPath = path.resolve(__dirname, '../../content/index.md');
+    if (!fs.existsSync(markdownPath)) {
+        console.error(chalk.red.bold(`Markdown file not found at: ${markdownPath}`));
+        return;
+    }
+    const markdownContent = fs.readFileSync(markdownPath, 'utf8');
 
-  // Beispiel-Markdown-Datei (später Schleife über alle Dateien)
-  const markdownPath = path.resolve(__dirname, '../../content/index.md');
-  const markdownContent = fs.readFileSync(markdownPath, 'utf8');
+    const { data: frontmatter, content: markdownBody } = matter(markdownContent);
+    const templateName = frontmatter.layout || 'default';
 
-  // Lese den Frontmatter
-  const { data: frontmatter, content: markdownBody } = matter(markdownContent);
+    const markdownHtml = await processMarkdown(markdownBody);
 
-  // Wähle das Template basierend auf dem Frontmatter oder dem Standard
-  const templateName = frontmatter.layout || 'default';
+    if (!templates[templateName]) {
+        console.error(chalk.red.bold(`Template '${templateName}' not found!`));
+        return;
+    }
 
-  // Lade das korrekte Template dynamisch
-  if (!templates[templateName]) {
-    console.error(chalk.red.bold(`Template '${templateName}' not found!`));
-    return;
-  }
-  
-  const { default: TemplateComponent } = await templates[templateName]();
+    const { default: TemplateComponent } = await templates[templateName]();
 
-  // Beispiel-Daten (später aus dem System geladen)
-  const pageData = {
-      title: frontmatter.title,
-      excerpt: frontmatter.excerpt,
-      date: frontmatter.date,
-      tags: frontmatter.tags,
-      html: '<h2>Test-Inhalt</h2><p>Dieser Inhalt kommt aus der Markdown-Datei.</p>' // Beispiel-HTML
-  };
+    const pageData = {
+        title: frontmatter.title || 'Seite ohne Titel',
+        excerpt: frontmatter.excerpt || '',
+        date: frontmatter.date || new Date().toISOString(),
+        tags: frontmatter.tags || [],
+        html: markdownHtml
+    };
 
-  // Rendere die React-Komponente zu HTML
-  const reactElement = React.createElement(TemplateComponent, {
-      page: pageData,
-      site: {}, // Platzhalter für Seitendaten
-      collections: {} // Platzhalter für Collections
-  });
-  
-  const htmlContent = ReactDOMServer.renderToString(reactElement);
+    const pageElement = React.createElement(TemplateComponent, {
+        page: pageData,
+        site: {},
+        collections: {}
+    });
 
-  // Erstelle die endgültige HTML-Seite
-  const finalHtml = `
+    const finalHtmlContent = ReactDOMServer.renderToString(
+        React.createElement(SiteLayout, null, pageElement)
+    );
+
+    const finalHtml = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -71,18 +77,18 @@ export async function build() {
     <title>${pageData.title}</title>
 </head>
 <body>
-    <div id="root">${htmlContent}</div>
+    <div id="root">${finalHtmlContent}</div>
 </body>
 </html>
-  `;
+    `;
 
-  // Schreibe die Datei in den dist-Ordner
-  const outputPath = path.resolve(distPath, 'index.html');
-  fs.writeFileSync(outputPath, finalHtml);
+    const outputPath = path.resolve(distPath, 'index.html');
+    fs.writeFileSync(outputPath, finalHtml);
 
-  console.log(chalk.green.bold("Website build complete!"));
+    console.log(chalk.green.bold("Website build complete!"));
 }
 
+// Füge die fehlenden Funktionen hinzu, damit sie exportiert werden können
 export async function watch() {
     console.log(chalk.blue.bold("Watching files for changes..."));
 }
