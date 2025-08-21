@@ -15,7 +15,7 @@ nextgen static page framework that parses Markdown files into lightning-fast, hi
 [![Node.js Version](https://img.shields.io/badge/Node.js-22.18-brightgreen)](https://nodejs.org)
 [![NPM Version](https://img.shields.io/npm/v/npm?color=%23F5D627)](https://www.npmjs.com/)
 
-[Getting Started](#getting-started) | [Contribute](CONTRIBUTING) | [Documentation](https://github.com/numark-dev/NuMark/wiki) | [Website](https://numark-dev.github.io/NuMark/) | [License](#license)
+[Getting Started](#getting-started) | [Contribute](CONTRIBUTING.md) | [Documentation](https://github.com/numark-dev/NuMark/wiki) | [Website](https://numark-dev.github.io/NuMark/) | [License](#license)
 </div>
 
 ## Getting started
@@ -47,7 +47,7 @@ nextgen static page framework that parses Markdown files into lightning-fast, hi
 
 ## License
 
-This project is licensed under the [AGPL v3.0 License](LICENSE).
+This project is licensed under the [AGPL v3.0 License](LICENSE.md).
 
 ---
 
