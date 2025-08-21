@@ -6,6 +6,7 @@
 nextgen static page framework that parses Markdown files into lightning-fast, highly customizable websites.
 
 [![NuMark](https://img.shields.io/badge/NuMark-Static%20Site%20Generator-blue.svg)](https://github.com/numark/numark)
+
 ![Dynamic JSON Badge](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fnumark-dev%2FNuMark%2Frefs%2Fheads%2Fmain%2Fpackage.json&query=version&label=Version)
 ![Dynamic JSON Badge](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fnumark-dev%2FNuMark%2Frefs%2Fheads%2Fmain%2Fpackage.json&query=%24.release.state&label=State)
 • ![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/t/numark-dev/NuMark/main)
